@@ -42,6 +42,9 @@ public class NavegadorActivity extends SherlockActivity {
         if (item.getItemId() == 0) {
             startActivity(new Intent(this, new ListaCertificados().getClass()));
         }
+        else if (item.getItemId()==1){
+            startActivity(new Intent(this, CertificadoActual.class));
+        }
         return h;
     }
 
