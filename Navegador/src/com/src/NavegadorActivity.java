@@ -2,6 +2,7 @@
 package com.src;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -48,6 +49,10 @@ public class NavegadorActivity extends SherlockActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
+        File dir=new File("sdcard/certificados/");
+        if(dir.list()==null){
+            dir.mkdir();
+        }
         wv = (WebView) findViewById(R.id.webView1);
         wv.loadUrl(PROD_URL);
         SharedPreferences settings = getSharedPreferences("certificado", MODE_PRIVATE);
