@@ -2,7 +2,8 @@ package com.src;
 
 import java.util.ArrayList;
 
-import com.google.android.maps.ItemizedOverlay;
+import com.actionbarsherlock.app.SherlockListActivity;
+
 
 import android.app.ListActivity;
 import android.content.Intent;
@@ -16,7 +17,7 @@ import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.RadioButton;
 
-public class ListaCertificados extends ListActivity {
+public class ListaCertificados extends SherlockListActivity {
 	ListView lv;
 	String[] names = new String[] { "Issues", "Request for Information",
 			"Contracts", "Purchase Orders", "Change Orders", "Proposals",

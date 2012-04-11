@@ -1,15 +1,17 @@
 package com.src;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.webkit.WebView;
 
-public class NavegadorActivity extends Activity {
+import com.actionbarsherlock.app.SherlockActivity;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuItem;
+
+
+public class NavegadorActivity extends SherlockActivity {
 	private WebView wv;
     /** Called when the activity is first created. */
     @Override
@@ -23,12 +25,13 @@ public class NavegadorActivity extends Activity {
 		Log.d("MIO","dentro de navegador "+nombre);
 		
     }
+    
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
     	boolean h=super.onCreateOptionsMenu(menu);
     	menu.add(0, 0, 0, "Ver Certificados");
     	return h;
-    }
+    } 
     
     @Override
     public boolean onMenuItemSelected(int featureId, MenuItem item) {
