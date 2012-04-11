@@ -30,6 +30,7 @@ public class NavegadorActivity extends SherlockActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
     	boolean h=super.onCreateOptionsMenu(menu);
     	menu.add(0, 0, 0, "Ver Certificados");
+    	menu.add(0,1,1,"Certificado Actual");
     	return h;
     } 
     
