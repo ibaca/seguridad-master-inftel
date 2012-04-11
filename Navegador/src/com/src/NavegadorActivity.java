@@ -50,8 +50,7 @@ public class NavegadorActivity extends SherlockActivity {
         setContentView(R.layout.main);
         wv = (WebView) findViewById(R.id.webView1);
         wv.loadUrl(PROD_URL);
-        SharedPreferences settings = getSharedPreferences("certificado",
-                MODE_PRIVATE);
+        SharedPreferences settings = getSharedPreferences("certificado", MODE_PRIVATE);
         String nombre = settings.getString("nombre", " ");
         Log.d("MIO", "dentro de navegador " + nombre);
 
@@ -88,7 +87,6 @@ public class NavegadorActivity extends SherlockActivity {
             if (resultCode == RESULT_OK) {
                 String contents = intent.getStringExtra("SCAN_RESULT");
                 Log.d("RETURN", contents);
-                // Handle successful scan
             } else if (resultCode == RESULT_CANCELED) {
             }
         }
@@ -97,8 +95,7 @@ public class NavegadorActivity extends SherlockActivity {
     /* Metodo para generar certificados a partir del contenido de un String */
     public void createCert() throws IOException {
         String FILENAME = "cert";
-        SharedPreferences prefs = PreferenceManager
-                .getDefaultSharedPreferences(this);
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         final SharedPreferences.Editor editor = prefs.edit();
 
         int numCerts = prefs.getInt("numCertificados", 1);
