@@ -2,8 +2,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical" 
-    android:background="@color/blanco">
+    android:background="@color/blanco"
+    android:orientation="vertical" >
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -15,6 +15,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:text="@string/Nombre_del_certificado"
+            android:textColor="@color/negro"
             android:textSize="20dp" />
 
         <TextView
@@ -22,6 +23,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
+            android:textColor="@color/negro"
             android:textSize="20dp" />
     </RelativeLayout>
 
@@ -35,6 +37,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:text="@string/Common_name"
+            android:textColor="@color/negro"
             android:textSize="20dp" />
 
         <TextView
@@ -42,6 +45,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
+            android:textColor="@color/negro"
             android:textSize="20dp" />
     </RelativeLayout>
 
@@ -55,6 +59,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:text="@string/Organizacion"
+            android:textColor="@color/negro"
             android:textSize="20dp" />
 
         <TextView
@@ -62,6 +67,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
+            android:textColor="@color/negro"
             android:textSize="20dp" />
     </RelativeLayout>
 
@@ -75,6 +81,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:text="@string/Autoridad"
+            android:textColor="@color/negro"
             android:textSize="20dp" />
 
         <TextView
@@ -82,6 +89,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
+            android:textColor="@color/negro"
             android:textSize="20dp" />
     </RelativeLayout>
 
@@ -95,6 +103,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:text="@string/Inicio"
+            android:textColor="@color/negro"
             android:textSize="20dp" />
 
         <TextView
@@ -102,6 +111,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
+            android:textColor="@color/negro"
             android:textSize="20dp" />
     </RelativeLayout>
 
@@ -115,6 +125,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:text="@string/Expira"
+            android:textColor="@color/negro"
             android:textSize="20dp" />
 
         <TextView
@@ -122,6 +133,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
+            android:textColor="@color/negro"
             android:textSize="20dp" />
     </RelativeLayout>
 
@@ -135,6 +147,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:text="@string/Ciudad"
+            android:textColor="@color/negro"
             android:textSize="20dp" />
 
         <TextView
@@ -142,6 +155,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
+            android:textColor="@color/negro"
             android:textSize="20dp" />
     </RelativeLayout>
 
@@ -155,6 +169,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:text="@string/Cifrado"
+            android:textColor="@color/negro"
             android:textSize="20dp" />
 
         <TextView
@@ -162,6 +177,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
+            android:textColor="@color/negro"
             android:textSize="20dp" />
     </RelativeLayout>
 
