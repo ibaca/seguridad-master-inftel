@@ -3,10 +3,6 @@ package com.src;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
-
-import org.apache.http.conn.ssl.SSLSocketFactory;
-
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.TextView;

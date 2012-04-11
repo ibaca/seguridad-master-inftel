@@ -1,5 +1,6 @@
 package com.src;
 
+import java.io.File;
 import java.util.ArrayList;
 
 import com.actionbarsherlock.app.SherlockListActivity;
@@ -19,15 +20,15 @@ import android.widget.RadioButton;
 
 public class ListaCertificados extends SherlockListActivity {
 	ListView lv;
-	String[] names = new String[] { "Issues", "Request for Information",
-			"Contracts", "Purchase Orders", "Change Orders", "Proposals",
-			"Submittals" };
+	String[] names;
 	String nombre = "";
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		Log.d("MIO", "he creado la lista");
+		File dir=new File("sdcard/certificados/");
+		names=dir.list();
 		lv = getListView(); 
 		lv.setCacheColorHint(Color.TRANSPARENT);
 		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1, names);
