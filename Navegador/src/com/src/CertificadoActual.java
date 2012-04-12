@@ -25,8 +25,6 @@ public class CertificadoActual extends SherlockActivity {
         nombre = settings.getString("nombre", "");
         try {
             FileInputStream fin = new FileInputStream(new File("/sdcard/certificados/"+nombre));
-            BufferedInputStream bf = new BufferedInputStream(fin);
-            CertificateFactory cf  =CertificateFactory.getInstance("X.509");
             X509Certificate cert= X509Certificate.getInstance(fin);
 //            X509Certificate.getInstance(fin);
             ((TextView)findViewById(R.id.textView11)).setText(cert.getIssuerDN().getName());
