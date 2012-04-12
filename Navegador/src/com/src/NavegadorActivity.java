@@ -26,7 +26,7 @@ import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.scheme.SchemeRegistry;
 import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.conn.SingleClientConnManager;
+import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -34,6 +34,7 @@ import android.content.res.Resources.NotFoundException;
 import android.os.Bundle;
 import android.util.Log;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 
 import com.actionbarsherlock.app.SherlockActivity;
 import com.actionbarsherlock.view.Menu;
@@ -41,7 +42,7 @@ import com.actionbarsherlock.view.MenuItem;
 
 public class NavegadorActivity extends SherlockActivity {
     private WebView wv;
-    private static final String PROD_URL = "https://home.bacamt.com:83/";
+    private static final String PROD_URL = "https://home.bacamt.com:83";
     private static final String LOGTAG = "https";
     private static final String RUTA_CERT = "certificados";
     private String nombre;
@@ -59,6 +60,7 @@ public class NavegadorActivity extends SherlockActivity {
             metodoParaLlamarAlQR();
         }
         wv = (WebView) findViewById(R.id.webView1);
+        wv.setWebViewClient(new WebViewClient());
         try {
             connect();
         } catch (Exception e) {
@@ -72,6 +74,7 @@ public class NavegadorActivity extends SherlockActivity {
         menu.add(0, 0, 0, "Ver Certificados");
         menu.add(1, 1, 1, "Certificado Actual");
         menu.add(2, 2, 2, "Añadir certificado");
+        menu.add(3, 3, 3, "Revocar certificado");
         return h;
     }
 
@@ -86,6 +89,9 @@ public class NavegadorActivity extends SherlockActivity {
         }
         else if (item.getItemId() == 2) {
             metodoParaLlamarAlQR();
+        }
+        else if (item.getItemId() == 3) {
+            startActivity(new Intent(this, RevocarCertificados.class));
         }
         return h;
     }
@@ -135,15 +141,13 @@ public class NavegadorActivity extends SherlockActivity {
         KeyStore trusted = KeyStore.getInstance("BKS");
         trusted.load(getResources().openRawResource(R.raw.truststore), "inftel".toCharArray());
 
-        MySSLSocketFactory sslf = new MySSLSocketFactory(trusted);
-        sslf.setHostnameVerifier(SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
+        SSLSocketFactory sslf = new SSLSocketFactory(trusted);
 
         SchemeRegistry schemeRegistry = new SchemeRegistry();
         schemeRegistry.register(new Scheme("https", sslf, 443));
-        SingleClientConnManager cm = new SingleClientConnManager(request.getParams(),
-                schemeRegistry);
 
-        HttpClient client = new DefaultHttpClient(cm, request.getParams());
+        HttpClient client = new DefaultHttpClient(new ThreadSafeClientConnManager(
+                request.getParams(), schemeRegistry), request.getParams());
         HttpResponse result = client.execute(request);
 
         /* Comprobamos que la respuesta que obtenemos es valida */
@@ -167,24 +171,26 @@ public class NavegadorActivity extends SherlockActivity {
 
         HttpGet request = new HttpGet(new URI(PROD_URL));
 
+        // Certificado de la Autoridad Certificador (CA)
         KeyStore trusted = KeyStore.getInstance("BKS");
         trusted.load(getResources().openRawResource(R.raw.truststore), "inftel".toCharArray());
 
         String FILENAME = getDir(RUTA_CERT, MODE_PRIVATE).getAbsolutePath() + "/" + nombre;
         Log.d(LOGTAG, FILENAME);
+
+        // Certificado del cliente
         KeyStore clientCert = KeyStore.getInstance("pkcs12");
         FileInputStream fis = new FileInputStream(new File(FILENAME));
         clientCert.load(fis, "inftel".toCharArray());
-        // clientCert.getCertificate("");
+
         SSLSocketFactory sslf = new SSLSocketFactory(clientCert, null, trusted);
-        sslf.setHostnameVerifier(SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
 
         SchemeRegistry schemeRegistry = new SchemeRegistry();
         schemeRegistry.register(new Scheme("https", sslf, 443));
-        SingleClientConnManager cm = new SingleClientConnManager(request.getParams(),
-                schemeRegistry);
 
-        HttpClient client = new DefaultHttpClient(cm, request.getParams());
+        HttpClient client = new DefaultHttpClient(new ThreadSafeClientConnManager(
+                request.getParams(), schemeRegistry), request.getParams());
+
         HttpResponse result = client.execute(request);
 
         /* Comprobamos que la respuesta que obtenemos es valida */
@@ -209,7 +215,8 @@ public class NavegadorActivity extends SherlockActivity {
             try {
                 BufferedReader r1 = new BufferedReader(new InputStreamReader(ists, "UTF-8"));
                 while ((line = r1.readLine()) != null) {
-                    sb.append(line).append("\n");
+                    // Ya que es codigo HTML metemos saltos de linea
+                    sb.append(line).append("<br/>");
                 }
             } finally {
                 ists.close();
