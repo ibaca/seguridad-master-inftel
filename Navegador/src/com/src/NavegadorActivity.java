@@ -43,7 +43,7 @@ public class NavegadorActivity extends SherlockActivity {
     private WebView wv;
     private static final String PROD_URL = "https://home.bacamt.com:83/";
     private static final String LOGTAG = "https";
-    private static final String RUTA_CERT = "/sdcard/certificados/";
+    private static final String RUTA_CERT = "certificados";
     private String nombre;
 
     /** Called when the activity is first created. */
@@ -51,12 +51,11 @@ public class NavegadorActivity extends SherlockActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
-        File dir = new File(RUTA_CERT);
+        File dir = getDir(RUTA_CERT, MODE_PRIVATE);
         SharedPreferences settings = getSharedPreferences("certificado", MODE_PRIVATE);
         nombre = settings.getString("nombre", "");
-        if (dir.list() == null || dir.list().length == 0) {
-            Log.d("CARPETA", "He creado la carpeta");
-            dir.mkdir();
+        if (dir.list().length == 0) {
+            // No hay ningun certificado por lo que tengo que crearlo
             metodoParaLlamarAlQR();
         }
         wv = (WebView) findViewById(R.id.webView1);
@@ -114,7 +113,7 @@ public class NavegadorActivity extends SherlockActivity {
 
     /* Metodo para generar certificados a partir del contenido de un String */
     public void createCert(InputStream is, String nombre) throws IOException {
-        String FILENAME = RUTA_CERT + "cert" + nombre;
+        String FILENAME = getDir(RUTA_CERT, MODE_PRIVATE).getAbsolutePath() + "/" + nombre;
 
         Log.d(LOGTAG, FILENAME);
         // FileOutputStream fos = openFileOutput(FILENAME,
@@ -156,7 +155,7 @@ public class NavegadorActivity extends SherlockActivity {
         HttpEntity getResponseEntity = result.getEntity();
         InputStream is = getResponseEntity.getContent();
         int lIndex = url.lastIndexOf("/");
-        String nombre = url.substring(lIndex);
+        String nombre = url.substring(lIndex + 1);
         Log.d(LOGTAG, nombre);
         createCert(is, nombre);
     }
@@ -171,12 +170,12 @@ public class NavegadorActivity extends SherlockActivity {
         KeyStore trusted = KeyStore.getInstance("BKS");
         trusted.load(getResources().openRawResource(R.raw.truststore), "inftel".toCharArray());
 
-        // De momento usamos el certificado directamente del raw. Posteriormente
-        // habra que cambiarlo
+        String FILENAME = getDir(RUTA_CERT, MODE_PRIVATE).getAbsolutePath() + "/" + nombre;
+        Log.d(LOGTAG, FILENAME);
         KeyStore clientCert = KeyStore.getInstance("pkcs12");
-        FileInputStream fis = new FileInputStream(new File(RUTA_CERT + nombre));
+        FileInputStream fis = new FileInputStream(new File(FILENAME));
         clientCert.load(fis, "inftel".toCharArray());
-//        clientCert.getCertificate("");
+        // clientCert.getCertificate("");
         SSLSocketFactory sslf = new SSLSocketFactory(clientCert, null, trusted);
         sslf.setHostnameVerifier(SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
 
@@ -196,7 +195,7 @@ public class NavegadorActivity extends SherlockActivity {
         }
         HttpEntity getResponseEntity = result.getEntity();
         InputStream is = getResponseEntity.getContent();
-        String contenido=convertinputStreamToString(is);
+        String contenido = convertinputStreamToString(is);
         Log.i(LOGTAG, "Content: " + contenido);
         wv.loadData(contenido, "text/html", "UTF-8");
     }
