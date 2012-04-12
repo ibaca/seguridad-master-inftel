@@ -55,7 +55,7 @@ public class CertificadoActual extends SherlockActivity {
                 ((TextView) findViewById(R.id.textView31)).setText(org);
                 ((TextView) findViewById(R.id.textView41)).setText(cn);
                 ((TextView) findViewById(R.id.textView51)).setText(x509.getNotBefore()
-                        .toGMTString());
+                        .toGMTString()); 
                 ((TextView) findViewById(R.id.textView61))
                         .setText(x509.getNotAfter().toGMTString());
                 ((TextView) findViewById(R.id.textView71)).setText(ciudad);
