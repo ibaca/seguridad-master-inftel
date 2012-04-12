@@ -3,6 +3,7 @@ package com.src;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -27,7 +28,6 @@ import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.SingleClientConnManager;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources.NotFoundException;
@@ -45,6 +45,7 @@ public class NavegadorActivity extends SherlockActivity {
     private static final String PROD_URL = "https://home.bacamt.com:83/";
     private static final String LOGTAG = "https";
     private static final String RUTA_CERT = "/sdcard/certificados/";
+    private String nombre;
 
     /** Called when the activity is first created. */
     @Override
@@ -77,7 +78,7 @@ public class NavegadorActivity extends SherlockActivity {
         boolean h = super.onCreateOptionsMenu(menu);
         menu.add(0, 0, 0, "Ver Certificados");
         menu.add(1, 1, 1, "Certificado Actual");
-        menu.add(2, 2, 2, "Añadir certificado");
+        menu.add(2, 2, 2, "AÃ±adir certificado");
         return h;
     }
 
@@ -181,8 +182,8 @@ public class NavegadorActivity extends SherlockActivity {
         // De momento usamos el certificado directamente del raw. Posteriormente
         // habra que cambiarlo
         KeyStore clientCert = KeyStore.getInstance("pkcs12");
-        clientCert.load(getResources().openRawResource(R.raw.clientpass),
-                "inftel".toCharArray());
+        FileInputStream fis = new FileInputStream(new File(RUTA_CERT + nombre));
+        clientCert.load(fis, "inftel".toCharArray());
 
         SSLSocketFactory sslf = new SSLSocketFactory(clientCert, null, trusted);
         sslf.setHostnameVerifier(SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
