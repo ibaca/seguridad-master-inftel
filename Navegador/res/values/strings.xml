@@ -6,9 +6,9 @@
     <string name="Nombre_del_certificado">Nombre del certificado</string>
     <string name="Common_name">Common Name</string>
     <string name="Organizacion">Organizacion</string>
-    <string name="Autoridad">Autoridad Certificadora</string>
-    <string name="Inicio">Fecha Inicio</string>
-    <string name="Expira">Fecha Expiracion</string>
+    <string name="Autoridad">CA</string>
+    <string name="Inicio">Inicio</string>
+    <string name="Expira">Expira</string>
     <string name="Ciudad">Ciudad</string>
     <string name="Cifrado">Cifrado</string>
 
