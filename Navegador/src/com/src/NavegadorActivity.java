@@ -53,7 +53,7 @@ public class NavegadorActivity extends SherlockActivity {
         setContentView(R.layout.main);
         File dir = new File(RUTA_CERT);
         SharedPreferences settings = getSharedPreferences("certificado", MODE_PRIVATE);
-        String nombre = settings.getString("nombre", "");
+        nombre = settings.getString("nombre", "");
         if (dir.list() == null || dir.list().length == 0) {
             Log.d("CARPETA", "He creado la carpeta");
             dir.mkdir();
@@ -63,10 +63,8 @@ public class NavegadorActivity extends SherlockActivity {
         try {
             connect();
         } catch (Exception e) {
+            Log.d("MIO", "dentro de navegador " + nombre, e);
         }
-
-        Log.d("MIO", "dentro de navegador " + nombre);
-
     }
 
     @Override
@@ -178,7 +176,7 @@ public class NavegadorActivity extends SherlockActivity {
         KeyStore clientCert = KeyStore.getInstance("pkcs12");
         FileInputStream fis = new FileInputStream(new File(RUTA_CERT + nombre));
         clientCert.load(fis, "inftel".toCharArray());
-
+//        clientCert.getCertificate("");
         SSLSocketFactory sslf = new SSLSocketFactory(clientCert, null, trusted);
         sslf.setHostnameVerifier(SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
 
@@ -198,9 +196,9 @@ public class NavegadorActivity extends SherlockActivity {
         }
         HttpEntity getResponseEntity = result.getEntity();
         InputStream is = getResponseEntity.getContent();
-        Log.i(LOGTAG, "Content: " + convertinputStreamToString(is));
-        wv.loadData(convertinputStreamToString(is), "", "UTF-8");
-
+        String contenido=convertinputStreamToString(is);
+        Log.i(LOGTAG, "Content: " + contenido);
+        wv.loadData(contenido, "text/html", "UTF-8");
     }
 
     public String convertinputStreamToString(InputStream ists) throws IOException {
