@@ -131,8 +131,11 @@ public class NavegadorActivity extends SherlockActivity {
         // FileOutputStream fos = openFileOutput(FILENAME,
         // Context.MODE_PRIVATE);
         FileOutputStream fos = new FileOutputStream(new File(FILENAME));
-        String content = convertinputStreamToString(is);
-        fos.write(content.getBytes());
+        int read = 0;
+        byte[] buffer = new byte[1024];
+        while ((read = is.read(buffer)) != -1) {
+            fos.write(buffer, 0, read);
+        }
         fos.close();
 
         editor.putInt("numCertificados", numCerts + 1);
