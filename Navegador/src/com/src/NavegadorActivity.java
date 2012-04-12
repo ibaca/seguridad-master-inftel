@@ -32,7 +32,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources.NotFoundException;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.util.Log;
 import android.webkit.WebView;
 
@@ -55,13 +54,10 @@ public class NavegadorActivity extends SherlockActivity {
         File dir = new File(RUTA_CERT);
         SharedPreferences settings = getSharedPreferences("certificado", MODE_PRIVATE);
         String nombre = settings.getString("nombre", "");
-        SharedPreferences.Editor editor = settings.edit();
         if (dir.list() == null || dir.list().length == 0) {
             Log.d("CARPETA", "He creado la carpeta");
             dir.mkdir();
             metodoParaLlamarAlQR();
-            editor.putInt("numCertificados", 1);
-            editor.commit();
         }
         wv = (WebView) findViewById(R.id.webView1);
         try {
@@ -119,13 +115,8 @@ public class NavegadorActivity extends SherlockActivity {
     }
 
     /* Metodo para generar certificados a partir del contenido de un String */
-    public void createCert(InputStream is) throws IOException {
-        String FILENAME = RUTA_CERT + "cert";
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        final SharedPreferences.Editor editor = prefs.edit();
-
-        int numCerts = prefs.getInt("numCertificados", 1);
-        FILENAME += numCerts;
+    public void createCert(InputStream is, String nombre) throws IOException {
+        String FILENAME = RUTA_CERT + "cert" + nombre;
 
         Log.d(LOGTAG, FILENAME);
         // FileOutputStream fos = openFileOutput(FILENAME,
@@ -137,9 +128,6 @@ public class NavegadorActivity extends SherlockActivity {
             fos.write(buffer, 0, read);
         }
         fos.close();
-
-        editor.putInt("numCertificados", numCerts + 1);
-        editor.commit();
     }
 
     public void downloadCert(String url) throws URISyntaxException, KeyStoreException,
@@ -169,7 +157,10 @@ public class NavegadorActivity extends SherlockActivity {
         }
         HttpEntity getResponseEntity = result.getEntity();
         InputStream is = getResponseEntity.getContent();
-        createCert(is);
+        int lIndex = url.lastIndexOf("/");
+        String nombre = url.substring(lIndex);
+        Log.d(LOGTAG, nombre);
+        createCert(is, nombre);
     }
 
     /* Metodo encargado de conectar con Apache mediante SSL */
