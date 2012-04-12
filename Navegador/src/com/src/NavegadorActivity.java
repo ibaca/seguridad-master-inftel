@@ -30,6 +30,7 @@ import org.apache.http.impl.conn.SingleClientConnManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Resources.NotFoundException;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -49,8 +50,8 @@ public class NavegadorActivity extends SherlockActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
-        File dir=new File("sdcard/certificados/");
-        if(dir.list()==null || dir.list().length==0){
+        File dir = new File("sdcard/certificados/");
+        if (dir.list() == null || dir.list().length == 0) {
             Log.d("CARPETA", "He creado la carpeta");
             dir.mkdir();
             metodoParaLlamarAlQR();
@@ -93,7 +94,12 @@ public class NavegadorActivity extends SherlockActivity {
         if (requestCode == 0) {
             if (resultCode == RESULT_OK) {
                 String contents = intent.getStringExtra("SCAN_RESULT");
-                Log.d("RETURN", contents);
+                try {
+                    downloadCert(contents);
+                } catch (Exception e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
             } else if (resultCode == RESULT_CANCELED) {
             }
         }
@@ -115,6 +121,36 @@ public class NavegadorActivity extends SherlockActivity {
 
         editor.putInt("numCertificados", numCerts + 1);
         editor.commit();
+    }
+
+    public void downloadCert(String url) throws URISyntaxException, KeyStoreException,
+            NoSuchAlgorithmException, CertificateException, NotFoundException, IOException,
+            KeyManagementException, UnrecoverableKeyException {
+        HttpGet request = new HttpGet(new URI(url));
+
+        KeyStore trusted = KeyStore.getInstance("BKS");
+        trusted.load(getResources().openRawResource(R.raw.truststore), "inftel".toCharArray());
+
+        MySSLSocketFactory sslf = new MySSLSocketFactory(trusted);
+        sslf.setHostnameVerifier(SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
+
+        SchemeRegistry schemeRegistry = new SchemeRegistry();
+        schemeRegistry.register(new Scheme("https", sslf, 443));
+        SingleClientConnManager cm = new SingleClientConnManager(request.getParams(),
+                schemeRegistry);
+
+        HttpClient client = new DefaultHttpClient(cm, request.getParams());
+        HttpResponse result = client.execute(request);
+
+        /* Comprobamos que la respuesta que obtenemos es valida */
+        final int statusCode = result.getStatusLine().getStatusCode();
+        if (statusCode != HttpStatus.SC_OK) {
+            Log.w(LOGTAG, "Error " + statusCode + " for URL "
+                    + PROD_URL);
+        }
+        HttpEntity getResponseEntity = result.getEntity();
+        InputStream is = getResponseEntity.getContent();
+        Log.i(LOGTAG, "Content: " + convertinputStreamToString(is));
     }
 
     /* Metodo encargado de conectar con Apache mediante SSL */
