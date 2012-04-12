@@ -1,12 +1,10 @@
 package com.src;
 
-import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.security.cert.CertificateFactory;
+import java.security.cert.X509Certificate;
 
-import javax.security.cert.X509Certificate;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -25,7 +23,8 @@ public class CertificadoActual extends SherlockActivity {
         nombre = settings.getString("nombre", "");
         try {
             FileInputStream fin = new FileInputStream(new File("/sdcard/certificados/"+nombre));
-            X509Certificate cert= X509Certificate.getInstance(fin);
+            CertificateFactory cf = CertificateFactory.getInstance("X.509");
+            X509Certificate cert = (X509Certificate)cf.generateCertificate(fin);
 //            X509Certificate.getInstance(fin);
             ((TextView)findViewById(R.id.textView11)).setText(cert.getIssuerDN().getName());
             ((TextView)findViewById(R.id.textView21)).setText(cert.getSubjectDN().getName());

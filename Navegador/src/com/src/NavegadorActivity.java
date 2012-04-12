@@ -42,9 +42,9 @@ import com.actionbarsherlock.view.MenuItem;
 
 public class NavegadorActivity extends SherlockActivity {
     private WebView wv;
-    private static final String PROD_URL = "https://home.bacamt.com:83/cert/showme.phtml";
+    private static final String PROD_URL = "https://home.bacamt.com:83/";
     private static final String LOGTAG = "https";
-    private static final String RUTA_CERT = "sdcard/certificados/";
+    private static final String RUTA_CERT = "/sdcard/certificados/";
 
     /** Called when the activity is first created. */
     @Override
@@ -52,15 +52,22 @@ public class NavegadorActivity extends SherlockActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         File dir = new File(RUTA_CERT);
+        SharedPreferences settings = getSharedPreferences("certificado", MODE_PRIVATE);
+        String nombre = settings.getString("nombre", "");
+        SharedPreferences.Editor editor = settings.edit();
         if (dir.list() == null || dir.list().length == 0) {
             Log.d("CARPETA", "He creado la carpeta");
             dir.mkdir();
             metodoParaLlamarAlQR();
+            editor.putInt("numCertificados", 1);
+            editor.commit();
         }
         wv = (WebView) findViewById(R.id.webView1);
-        wv.loadUrl(PROD_URL);
-        SharedPreferences settings = getSharedPreferences("certificado", MODE_PRIVATE);
-        String nombre = settings.getString("nombre", "");
+        try {
+            connect();
+        } catch (Exception e) {
+        }
+
         Log.d("MIO", "dentro de navegador " + nombre);
 
     }
@@ -69,7 +76,8 @@ public class NavegadorActivity extends SherlockActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         boolean h = super.onCreateOptionsMenu(menu);
         menu.add(0, 0, 0, "Ver Certificados");
-        menu.add(0, 1, 1, "Certificado Actual");
+        menu.add(1, 1, 1, "Certificado Actual");
+        menu.add(2, 2, 2, "Añadir certificado");
         return h;
     }
 
@@ -81,6 +89,9 @@ public class NavegadorActivity extends SherlockActivity {
         }
         else if (item.getItemId() == 1) {
             startActivity(new Intent(this, CertificadoActual.class));
+        }
+        else if (item.getItemId() == 2) {
+            metodoParaLlamarAlQR();
         }
         return h;
     }
@@ -99,7 +110,6 @@ public class NavegadorActivity extends SherlockActivity {
                     Log.d(LOGTAG, contents);
                     downloadCert(contents);
                 } catch (Exception e) {
-                    // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
             } else if (resultCode == RESULT_CANCELED) {
@@ -117,7 +127,9 @@ public class NavegadorActivity extends SherlockActivity {
         FILENAME += numCerts;
 
         Log.d(LOGTAG, FILENAME);
-        FileOutputStream fos = openFileOutput(FILENAME, Context.MODE_PRIVATE);
+        // FileOutputStream fos = openFileOutput(FILENAME,
+        // Context.MODE_PRIVATE);
+        FileOutputStream fos = new FileOutputStream(new File(FILENAME));
         String content = convertinputStreamToString(is);
         fos.write(content.getBytes());
         fos.close();
@@ -192,6 +204,7 @@ public class NavegadorActivity extends SherlockActivity {
         HttpEntity getResponseEntity = result.getEntity();
         InputStream is = getResponseEntity.getContent();
         Log.i(LOGTAG, "Content: " + convertinputStreamToString(is));
+        wv.loadData(convertinputStreamToString(is), "", "UTF-8");
 
     }
 
