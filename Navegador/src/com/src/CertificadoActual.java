@@ -61,11 +61,10 @@ public class CertificadoActual extends SherlockActivity {
                 ((TextView) findViewById(R.id.textView71)).setText(ciudad);
                 ((TextView) findViewById(R.id.textView81)).setText(x509.getSigAlgOID());
             } catch (Exception e) {
-                Log.d("MIO", "a saltado la excepcion" + nombre, e);
+                Log.d("MIO", "a saltado la excepcion 1 " + nombre, e);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.d("MIO", "a saltado la excepcion 2" + nombre, e);
         }
-
     }
 }

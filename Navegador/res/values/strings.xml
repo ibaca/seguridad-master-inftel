@@ -3,7 +3,7 @@
 
     <string name="hello">Hello World, NavegadorActivity!</string>
     <string name="app_name">Navegador</string>
-    <string name="Nombre_del_certificado">Nombre del certificado</string>
+    <string name="Nombre_del_certificado">Nombre</string>
     <string name="Common_name">Common Name</string>
     <string name="Organizacion">Organizacion</string>
     <string name="Autoridad">CA</string>
