@@ -44,13 +44,14 @@ public class NavegadorActivity extends SherlockActivity {
     private WebView wv;
     private static final String PROD_URL = "https://home.bacamt.com:83/cert/showme.phtml";
     private static final String LOGTAG = "https";
+    private static final String RUTA_CERT = "sdcard/certificados/";
 
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
-        File dir = new File("sdcard/certificados/");
+        File dir = new File(RUTA_CERT);
         if (dir.list() == null || dir.list().length == 0) {
             Log.d("CARPETA", "He creado la carpeta");
             dir.mkdir();
@@ -95,6 +96,7 @@ public class NavegadorActivity extends SherlockActivity {
             if (resultCode == RESULT_OK) {
                 String contents = intent.getStringExtra("SCAN_RESULT");
                 try {
+                    Log.d(LOGTAG, contents);
                     downloadCert(contents);
                 } catch (Exception e) {
                     // TODO Auto-generated catch block
@@ -106,17 +108,18 @@ public class NavegadorActivity extends SherlockActivity {
     }
 
     /* Metodo para generar certificados a partir del contenido de un String */
-    public void createCert() throws IOException {
-        String FILENAME = "cert";
+    public void createCert(InputStream is) throws IOException {
+        String FILENAME = RUTA_CERT + "cert";
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         final SharedPreferences.Editor editor = prefs.edit();
 
         int numCerts = prefs.getInt("numCertificados", 1);
         FILENAME += numCerts;
-        String string = "hello world!";
 
+        Log.d(LOGTAG, FILENAME);
         FileOutputStream fos = openFileOutput(FILENAME, Context.MODE_PRIVATE);
-        fos.write(string.getBytes());
+        String content = convertinputStreamToString(is);
+        fos.write(content.getBytes());
         fos.close();
 
         editor.putInt("numCertificados", numCerts + 1);
@@ -150,7 +153,7 @@ public class NavegadorActivity extends SherlockActivity {
         }
         HttpEntity getResponseEntity = result.getEntity();
         InputStream is = getResponseEntity.getContent();
-        Log.i(LOGTAG, "Content: " + convertinputStreamToString(is));
+        createCert(is);
     }
 
     /* Metodo encargado de conectar con Apache mediante SSL */
