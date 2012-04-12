@@ -3,6 +3,8 @@ package com.src;
 import java.io.File;
 import java.util.ArrayList;
 
+import javax.security.cert.X509Certificate;
+
 import com.actionbarsherlock.app.SherlockListActivity;
 
 
@@ -33,7 +35,6 @@ public class ListaCertificados extends SherlockListActivity {
 		lv.setCacheColorHint(Color.TRANSPARENT);
 		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1, names);
 		lv.setAdapter(adapter);
-
 	}
 
 	protected void onListItemClick(ListView l, View v, int position, long id) {

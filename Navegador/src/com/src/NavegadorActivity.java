@@ -50,13 +50,15 @@ public class NavegadorActivity extends SherlockActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         File dir=new File("sdcard/certificados/");
-        if(dir.list()==null){
+        if(dir.list()==null || dir.list().length==0){
+            Log.d("CARPETA", "He creado la carpeta");
             dir.mkdir();
+            metodoParaLlamarAlQR();
         }
         wv = (WebView) findViewById(R.id.webView1);
         wv.loadUrl(PROD_URL);
         SharedPreferences settings = getSharedPreferences("certificado", MODE_PRIVATE);
-        String nombre = settings.getString("nombre", " ");
+        String nombre = settings.getString("nombre", "");
         Log.d("MIO", "dentro de navegador " + nombre);
 
     }
