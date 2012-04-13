@@ -27,9 +27,9 @@ public class ListaCertificados extends SherlockListActivity {
         names = dir.list();
         lv = getListView();
         lv.setCacheColorHint(Color.TRANSPARENT);
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
-                android.R.layout.simple_list_item_1, names);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.radio_group, names);
         lv.setAdapter(adapter);
+        lv.setBackgroundResource(R.color.blanco);
     }
 
     protected void onListItemClick(ListView l, View v, int position, long id) {
