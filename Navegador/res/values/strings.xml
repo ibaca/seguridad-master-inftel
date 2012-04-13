@@ -11,5 +11,9 @@
     <string name="Expira">Expira</string>
     <string name="Ciudad">Ciudad</string>
     <string name="Cifrado">Cifrado</string>
+    <string name="borrar">¿Quieres borrar el archivo del certificado?</string>
+    <string name="Importante">Importante</string>
+    <string name="Confirmar">Confirmar</string>
+    <string name="Cancelar">Cancelar</string>
 
 </resources>
