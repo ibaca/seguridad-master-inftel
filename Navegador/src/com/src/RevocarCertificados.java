@@ -27,9 +27,14 @@ import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 
 import com.actionbarsherlock.app.SherlockListActivity;
 
@@ -37,7 +42,10 @@ public class RevocarCertificados extends SherlockListActivity {
     private static final String PROD_URL = "https://home.bacamt.com:83/secure/list.phtml";
     private static final String LOGTAG = "https";
     private static final String RUTA_CERT = "certificados";
-    String nombre;
+    private String nombre;
+    private static final String URL_DELETE="https://home.bacamt.com:83/revoke,phtml?cert=";
+    private ListView list;
+    private String[] names;
 
     /** Called when the activity is first created. */
     @Override
@@ -50,10 +58,56 @@ public class RevocarCertificados extends SherlockListActivity {
         } catch (Exception e) {
             Log.d("MIO", "dentro de navegador " + nombre, e);
         }
-        // CONNECT GENERA EN LA VARIABLE CONTENIDO EL LISTADO CON LOS
-        // CERTIFICADOS
+        File dir = new File(getDir(RUTA_CERT, MODE_PRIVATE).getAbsolutePath() + "/");
+        names = dir.list();
+        list=getListView();
+        list.setBackgroundResource(R.color.blanco);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.radio_group, names);
+        list.setAdapter(adapter);
     }
 
+    @Override
+    protected void onListItemClick(ListView l, View v, int position, long id) {
+        super.onListItemClick(l, v, position, id);
+        final File borra=new File(getDir(RUTA_CERT, MODE_PRIVATE).getAbsolutePath() + "/"+names[position]);
+        AlertDialog.Builder dialogo1 = new AlertDialog.Builder(this);  
+        dialogo1.setTitle(getResources().getString(R.string.Importante));  
+        dialogo1.setMessage(getResources().getString(R.string.borrar));            
+        dialogo1.setCancelable(false);  
+        dialogo1.setPositiveButton(getResources().getString(R.string.Confirmar), new DialogInterface.OnClickListener() {  
+            public void onClick(DialogInterface dialogo1, int id) {  
+                borrarCertificado(borra);
+                borra.delete();
+            }  
+        });  
+        dialogo1.setNegativeButton(getResources().getString(R.string.Cancelar), new DialogInterface.OnClickListener() {  
+            public void onClick(DialogInterface dialogo1, int id) {  
+               finish();
+            }  
+        });            
+        dialogo1.show();
+        
+        
+    }
+    
+    public void borrarCertificado(File borra){
+        try {
+            HttpGet request = new HttpGet(new URI(URL_DELETE+ "/"+borra.getName()));
+            KeyStore trusted =  KeyStore.getInstance("BKS");;
+            KeyStore clientCert= KeyStore.getInstance("pkcs12");
+            FileInputStream fis = new FileInputStream(borra);
+            clientCert.load(fis, "inftel".toCharArray());
+            trusted.load(getResources().openRawResource(R.raw.truststore), "inftel".toCharArray());
+            SSLSocketFactory sslf = new SSLSocketFactory(clientCert, null, trusted);
+            SchemeRegistry schemeRegistry = new SchemeRegistry();
+            schemeRegistry.register(new Scheme("https", sslf, 443));
+            HttpClient client = new DefaultHttpClient(new ThreadSafeClientConnManager(request.getParams(), schemeRegistry), request.getParams());
+            client.execute(request);
+        } catch (Exception e) {
+            Log.d("MIO", "dentro de navegador " + nombre, e);
+        } 
+    }
+    
     /* Metodo encargado de conectar con Apache mediante SSL */
     public void connect() throws URISyntaxException, NoSuchAlgorithmException,
             CertificateException, IOException, KeyStoreException, KeyManagementException,
