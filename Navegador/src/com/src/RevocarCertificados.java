@@ -88,7 +88,6 @@ public class RevocarCertificados extends SherlockListActivity {
                 borra.delete();
                 }
                 catch(Exception e){}
-                
             }  
         });  
         dialogo1.setNegativeButton(getResources().getString(R.string.Cancelar), new DialogInterface.OnClickListener() {  
@@ -106,9 +105,7 @@ public class RevocarCertificados extends SherlockListActivity {
     
     public void borrarCertificado(String borra){
         try {
-            Log.d("MIO", "dentro del metodo " + URL_DELETE+borra+"a");
             borra=borra.trim();
-            Log.d("MIO", "dentro del metodo " + URL_DELETE+borra+"a");
             HttpGet request = new HttpGet(new URI(URL_DELETE+borra));
             KeyStore trusted =  KeyStore.getInstance("BKS");;
             KeyStore clientCert= KeyStore.getInstance("pkcs12");

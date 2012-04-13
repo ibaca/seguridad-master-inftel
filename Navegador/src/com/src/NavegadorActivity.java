@@ -56,8 +56,7 @@ public class NavegadorActivity extends SherlockActivity {
         SharedPreferences settings = getSharedPreferences("certificado", MODE_PRIVATE);
         nombre = settings.getString("nombre", "");
         if (dir.list().length == 0) {
-            // No hay ningun certificado por lo que tengo que crearlo
-            metodoParaLlamarAlQR();
+            llamadaQR();
         }
         wv = (WebView) findViewById(R.id.webView1);
         wv.setWebViewClient(new WebViewClient());
@@ -88,7 +87,7 @@ public class NavegadorActivity extends SherlockActivity {
             startActivity(new Intent(this, CertificadoActual.class));
         }
         else if (item.getItemId() == 2) {
-            metodoParaLlamarAlQR();
+            llamadaQR();
         }
         else if (item.getItemId() == 3) {
             startActivity(new Intent(this, RevocarCertificados.class));
@@ -96,7 +95,7 @@ public class NavegadorActivity extends SherlockActivity {
         return h;
     }
 
-    public void metodoParaLlamarAlQR() {
+    public void llamadaQR() {
         Intent intent = new Intent("com.google.zxing.client.android.SCAN");
         intent.putExtra("SCAN_MODE", "QR_CODE_MODE");
         startActivityForResult(intent, 0);
@@ -112,7 +111,6 @@ public class NavegadorActivity extends SherlockActivity {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-            } else if (resultCode == RESULT_CANCELED) {
             }
         }
     }
@@ -153,8 +151,7 @@ public class NavegadorActivity extends SherlockActivity {
         /* Comprobamos que la respuesta que obtenemos es valida */
         final int statusCode = result.getStatusLine().getStatusCode();
         if (statusCode != HttpStatus.SC_OK) {
-            Log.w(LOGTAG, "Error " + statusCode + " for URL "
-                    + PROD_URL);
+            Log.w(LOGTAG, "Error " + statusCode + " for URL " + PROD_URL);
         }
         HttpEntity getResponseEntity = result.getEntity();
         InputStream is = getResponseEntity.getContent();
