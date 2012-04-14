@@ -15,5 +15,6 @@
     <string name="Importante">Importante</string>
     <string name="Confirmar">Confirmar</string>
     <string name="Cancelar">Cancelar</string>
+    <string name="borrar2">El certificado esta revocado. ¿Desea borrarlo?</string>
 
 </resources>
