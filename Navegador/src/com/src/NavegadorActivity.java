@@ -28,6 +28,8 @@ import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources.NotFoundException;
@@ -55,15 +57,18 @@ public class NavegadorActivity extends SherlockActivity {
         File dir = getDir(RUTA_CERT, MODE_PRIVATE);
         SharedPreferences settings = getSharedPreferences("certificado", MODE_PRIVATE);
         nombre = settings.getString("nombre", "");
+        Log.d(LOGTAG, "El nombre: " + nombre);
         if (dir.list().length == 0) {
             llamadaQR();
         }
         wv = (WebView) findViewById(R.id.webView1);
         wv.setWebViewClient(new WebViewClient());
         try {
-            connect();
+            if (nombre != "") {
+                connect();
+            }
         } catch (Exception e) {
-            Log.d("MIO", "dentro de navegador " + nombre, e);
+            Log.d(LOGTAG, "dentro de navegador " + nombre, e);
         }
     }
 
@@ -81,7 +86,7 @@ public class NavegadorActivity extends SherlockActivity {
     public boolean onMenuItemSelected(int featureId, MenuItem item) {
         boolean h = super.onMenuItemSelected(featureId, item);
         if (item.getItemId() == 0) {
-            startActivity(new Intent(this, new ListaCertificados().getClass()));
+            startActivityForResult(new Intent(this, new ListaCertificados().getClass()), 1);
         }
         else if (item.getItemId() == 1) {
             startActivity(new Intent(this, CertificadoActual.class));
@@ -106,11 +111,20 @@ public class NavegadorActivity extends SherlockActivity {
             if (resultCode == RESULT_OK) {
                 String contents = intent.getStringExtra("SCAN_RESULT");
                 try {
-                    Log.d(LOGTAG, contents);
+                    Log.d(LOGTAG, "c: " + contents);
                     downloadCert(contents);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+            }
+        }
+        if (requestCode == 1 || requestCode == 0) {
+            try {
+                SharedPreferences settings = getSharedPreferences("certificado", MODE_PRIVATE);
+                nombre = settings.getString("nombre", "");
+                connect();
+            } catch (Exception e) {
+                Log.d("MIO", "dentro de reconexion " + nombre, e);
             }
         }
     }
@@ -156,9 +170,15 @@ public class NavegadorActivity extends SherlockActivity {
         HttpEntity getResponseEntity = result.getEntity();
         InputStream is = getResponseEntity.getContent();
         int lIndex = url.lastIndexOf("/");
-        String nombre = url.substring(lIndex + 1);
-        Log.d(LOGTAG, nombre);
-        createCert(is, nombre);
+        String name = url.substring(lIndex + 1);
+        SharedPreferences settings = getSharedPreferences("certificado", MODE_PRIVATE);
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putString("nombre", name);
+
+        // Commit the edits!
+        editor.commit();
+        Log.d(LOGTAG, "Guardado nombre: " + name);
+        createCert(is, name);
     }
 
     /* Metodo encargado de conectar con Apache mediante SSL */
@@ -188,19 +208,52 @@ public class NavegadorActivity extends SherlockActivity {
         HttpClient client = new DefaultHttpClient(new ThreadSafeClientConnManager(
                 request.getParams(), schemeRegistry), request.getParams());
 
-        HttpResponse result = client.execute(request);
+        HttpResponse result = null;
+        try {
+            result = client.execute(request);
+        } catch (IOException e) {
+            if (nombre != "") {
+                AlertDialog.Builder dialogo1 = new AlertDialog.Builder(this);
+                dialogo1.setTitle(getResources().getString(R.string.Importante));
+                dialogo1.setMessage(getResources().getString(R.string.borrar2));
+                dialogo1.setCancelable(false);
+                dialogo1.setPositiveButton(getResources().getString(R.string.Confirmar),
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialogo1, int id) {
+                                try {
+                                    final File borra = new File(getDir(RUTA_CERT, MODE_PRIVATE)
+                                            .getAbsolutePath() + "/" + nombre);
+                                    borra.delete();
+                                }
+                                catch (Exception e) {
+                                }
+                            }
+                        });
+                dialogo1.setNegativeButton(getResources().getString(R.string.Cancelar),
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialogo1, int id) {
+                                dialogo1.dismiss();
+                            }
+                        });
+                dialogo1.show();
+            }
+        }
 
         /* Comprobamos que la respuesta que obtenemos es valida */
-        final int statusCode = result.getStatusLine().getStatusCode();
-        if (statusCode != HttpStatus.SC_OK) {
-            Log.w(LOGTAG, "Error " + statusCode + " for URL "
-                    + PROD_URL);
+        if (result != null) {
+            final int statusCode = result.getStatusLine().getStatusCode();
+            if (statusCode != HttpStatus.SC_OK) {
+                Log.w(LOGTAG, "Error " + statusCode + " for URL "
+                        + PROD_URL);
+            }
+            HttpEntity getResponseEntity = result.getEntity();
+            InputStream is = getResponseEntity.getContent();
+            String contenido = convertinputStreamToString(is);
+            Log.i(LOGTAG, "Content: " + contenido);
+            wv.loadData(contenido, "text/html", "UTF-8");
+        } else {
+            wv.loadData("", "text/html", "UTF-8");
         }
-        HttpEntity getResponseEntity = result.getEntity();
-        InputStream is = getResponseEntity.getContent();
-        String contenido = convertinputStreamToString(is);
-        Log.i(LOGTAG, "Content: " + contenido);
-        wv.loadData(contenido, "text/html", "UTF-8");
     }
 
     public String convertinputStreamToString(InputStream ists) throws IOException {
