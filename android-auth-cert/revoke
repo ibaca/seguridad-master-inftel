@@ -1,0 +1,21 @@
+#!/bin/bash
+
+HOME=/home/ibaca/android-auth-cert
+export HOME
+cd ~
+
+FILE=$1
+
+echo "Revocando clave $FILE..."
+openssl ca -config openssl.cnf -revoke certs/$FILE.crt
+echo ""
+
+echo "Actualizando listado CRL..."
+openssl ca -config openssl.cnf -gencrl -out crl.pem
+echo ""
+
+echo "Purgando y recargando base de datos de certificados..."
+mv certs/$FILE.* revoked/
+sudo ./graceful
+echo ""
+

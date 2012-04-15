@@ -1,0 +1,28 @@
+<a href="https://home.bacamt.com:83/secure/revoke.phtml"><h3>Listado de certificados del usuario</h3></a>
+<p>Click sobre el nombre del certificado para revocar.</p>
+<pre>
+<? 
+$user = $_SERVER['SSL_CLIENT_S_DN_CN'];
+$files = scandir('/home/ibaca/android-auth-cert/certs'); 
+foreach ( $files as $file ) {
+  if (preg_match ("/^$user.+p12$/i", $file)) {
+    $file = explode('.',$file);
+    echo "<a href='https://home.bacamt.com:83/secure/revoke.phtml?cert=$file[0]'>$file[0]</a>\n";
+  }
+}
+?>
+</pre>
+<? function print_row($text, $row) { echo "$text\n"; } ?>
+<?
+if (array_key_exists('cert',$_GET)) {
+?>
+<h4>Resultado de la revocacion</h4>
+<pre>
+<?
+  $cert = $_GET['cert'];
+  exec("/home/ibaca/android-auth-cert/revoke $cert 2>&1", $result, $status);
+  array_walk($result,"print_row");
+}
+?>
+</pre>
+<a href="https://home.bacamt.com:83/"> Volver </a> 

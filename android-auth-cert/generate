@@ -1,0 +1,26 @@
+#!/bin/bash
+
+HOME=/home/ibaca/android-auth-cert
+export HOME
+cd ~
+
+USER=$1
+TIME=$2
+CERT=${1}_${2}
+
+echo "Generando nueva clave RSA..."
+openssl genrsa -out certs/${CERT}.key 1024
+echo ""
+
+echo "Generando peticion de certificado de cliente..."
+openssl req -new -key certs/${CERT}.key -out certs/${CERT}.csr -subj "/O=Inftel/CN=${USER}"
+echo ""
+
+echo "Firmando la peticion con la autoridad AndroidAuth..."
+openssl x509 -req -days 365 -CA AndroidAuthCA.crt -CAkey AndroidAuthCA.key -CAcreateserial -in certs/${CERT}.csr -out certs/${CERT}.crt
+echo ""
+
+echo "Empaquetando certificado firmado y clave privada del cliente..."
+openssl pkcs12 -export -clcerts -in certs/${CERT}.crt -inkey certs/${CERT}.key -out certs/${CERT}.p12 -passout pass:inftel
+echo ""
+

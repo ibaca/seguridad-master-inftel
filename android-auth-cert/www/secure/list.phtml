@@ -1,0 +1,12 @@
+<pre>
+<? 
+$user = $_SERVER['SSL_CLIENT_S_DN_CN'];
+$files = scandir('/home/ibaca/android-auth-cert/certs'); 
+foreach ( $files as $file ) {
+  if (preg_match ("/^$user.+p12$/i", $file)) {
+    $file = explode('.',$file);
+    echo "$file[0] \n";
+  }
+}
+?>
+</pre>

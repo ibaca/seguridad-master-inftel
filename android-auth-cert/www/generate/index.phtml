@@ -1,0 +1,46 @@
+<? include "../phpqrcode.php" ?>
+<h3>Generacion de certificados</h3>
+Usuario actual <b><? print($_SERVER['REMOTE_USER']) ?></b>
+<a href="https://logout@home.bacamt.com:83/generate">[logout]</a>
+<p>Se esta generando una clave nueva, es un proceso extremadamente complejo, se paciente...</p>
+
+<? 
+$user=$_SERVER['REMOTE_USER']; 
+$time=$_SERVER['REQUEST_TIME']; 
+$p12="${user}_${time}.p12";
+?>
+
+<!--
+User: <? print($user) ?>
+<br>
+Time: <? print($time) ?>
+<br>
+<? echo exec('groups') ?>
+<br>
+-->
+
+<a href="https://home.bacamt.com:83/download/<? echo $p12 ?>">
+<img src="https://home.bacamt.com:83/download/<? echo $p12 ?>.png">
+</a>
+
+<?
+function print_row($text, $row) {
+    echo "$text\n";
+}
+exec("/home/ibaca/android-auth-cert/generate $user $time 2>&1", $result, $status);
+exec("cd /home/ibaca/android-auth-cert && ln -s ../../certs/$p12 www/download/");
+?>
+<h4>Resultados de la generacion de clave</h4>
+<pre>
+<?
+array_walk($result,"print_row");
+QRcode::png("https://home.bacamt.com:83/download/$p12", "../download/$p12.png", 'H', 6, 1);
+?>
+</pre>
+
+<!--
+<pre>
+<? print_r($_SERVER) ?>
+</pre>
+-->
+<a href="https://home.bacamt.com:83/">Volver</a>
